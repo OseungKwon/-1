@@ -3,11 +3,11 @@
 #include<string.h>
 #include<stdlib.h>
 
-void input(int arr[][2]) {
+void input(int arr[2]) {
 	for (int i = 0; i < 35; i++) {
-		arr[i][0] = i;
-		printf("%d 번째 수: ", arr[i][0] + 1);
-		scanf("%d", &arr[i][1]);
+		arr[i] = i;
+		printf("%d 번째 수: ", arr[i] + 1);
+		scanf("%d", &arr[i]);
 
 		if ((i + 1) % 7 == 0)
 			printf("\n");
@@ -15,13 +15,13 @@ void input(int arr[][2]) {
 
 }
 
-void Encryption(int arr[][2], int row, char key){
+void Encryption(int arr[], int row, char key) {
 	for (int i = 0; i < row; i++) {
-		arr[i][1] = arr[i][1] ^ key;
+		arr[i] = arr[i] ^ key;
 	}
 }
 
-void Decrypted(int arr[2], int row, char key){
+void Decrypted(int arr[], int row, char key) {
 	for (int i = 0; i < row; i++) {
 		arr[i] = arr[i] ^ key;
 	}
@@ -30,7 +30,7 @@ void Decrypted(int arr[2], int row, char key){
 void SwithToArr(FILE* fp, int result[], int row) {
 
 	char buffer[400];
-	char* sArr[300] = { NULL, };
+	char* sArr[400] = { NULL, };
 	int i = 0;
 
 	fp = fopen("sample.txt", "r");
@@ -55,14 +55,14 @@ void SwithToArr(FILE* fp, int result[], int row) {
 
 int main(void) {
 	FILE* fp;
-	int num[35][2];
+	int num[35];
 	int result[35];
 	int buf[2][2];
 	int count = 0;
+	int key;
 
 	int row = sizeof(num) / sizeof(num[0]); //배열 세로크기 구하기
-	int key;
-	
+
 	if ((fp = fopen("sample.txt", "r")) == NULL) {	//파일 유무 확인
 
 		fp = fopen("sample.txt", "w");	//파일 실행
@@ -70,7 +70,7 @@ int main(void) {
 			puts("파일오픈 실패");
 			return -1;
 		}
-		
+
 		input(num);
 
 		printf("key를 입력해주세요: ");
@@ -78,50 +78,44 @@ int main(void) {
 		Encryption(num, row, key);
 
 		for (int i = 0; i < 35; i++) {
-			printf("%d\t", num[i][1]);
-			fprintf(fp, "%d ", num[i][1]);
+			printf("%d\t", num[i]);
+			fprintf(fp, "%d ", num[i]);
 		}
 		fclose(fp);
 
 	}
+	else {
+		printf("\n암호를 풀겠습니다\n");
+		SwithToArr(fp, result, row);
 
-
-	//파일이 이미 존재하는 경우
-	puts("true");
-
-	printf("\n암호를 풀겠습니다\n");
-	printf("key를 입력해주세요: ");
-	scanf("%d", &key);
-	SwithToArr(fp,result,row);
-
-		
-	puts("");
-	for (int i = 0; i < 35; i++) {		//암호화된 파일 읽기
-		printf("%d ", result[i]);
-	}
-	puts("");
-	Decrypted(result, row, key);
-
-	for (int i = 0; i < 35; i++) {		//복호화된 파일 읽기
-		printf("%d ", result[i]);
-	}
-
-
-	while(getchar()!='\n');		//버퍼 비우기
-	puts("");
-	printf("요구하는 수를 2개를 입력하세요: ");
-	scanf("%d %d", &buf[0][0], &buf[1][0]);
+		printf("key를 입력해주세요: ");
+		scanf("%d", &key);
 
 
 
+		puts("");
+		Decrypted(result, row, key);
 
-	for (int i = 0; i < 2; i++) {
-		while (buf[i][0] != count) {
-			buf[i][1] = result[count];
-			count++;
+		while (getchar() != '\n');
+		puts("");
+		printf("요구하는 수를 2개를 입력하세요: ");
+		scanf("%d %d", &buf[0][0], &buf[1][0]);
+
+
+
+		for (int i = 0; i < 2; i++) {
+			while (buf[i][0] != count) {
+				buf[i][1] = result[count];
+				count++;
+			}
+
 		}
-
+		printf("%d: %d\n%d: %d", buf[0][0], buf[0][1], buf[1][0], buf[1][1]);
 	}
-	printf("%d %d", buf[0][1], buf[1][1]);
+
+	printf("\n");
+	system("pause");
+	return 0;
+
 
 }
